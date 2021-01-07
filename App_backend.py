@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS, cross_origin
 import warnings
 
 with warnings.catch_warnings():
@@ -13,7 +14,7 @@ from sqlalchemy.orm import relationship
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://bd70b9c3a2566b:6cade5ff@eu-cdbr-west-03.cleardb.net/heroku_0dbbbf44bb63069'
 db = SQLAlchemy(app)
-
+CORS(app, support_credentials=True)
 ###Models####
  
 class User(db.Model):
@@ -82,6 +83,7 @@ class UserSchema(ModelSchema):
     user_score = fields.Number(required=True)
 
 @app.route('/api/user/create', methods = ['POST'])
+@cross_origin(supports_credentials=True)
 def create_user():
     data = request.get_json()
     user_schema = UserSchema()
@@ -91,6 +93,7 @@ def create_user():
 
 # endpoint to show all users
 @app.route("/api/user", methods=["GET"])
+@cross_origin(supports_credentials=True)
 def get_users():
     get_user = User.query.all()
     user_schema = UserSchema(many=True)
