@@ -81,13 +81,39 @@ class UserSchema(ModelSchema):
     user_pseudo = fields.String(required=True)
     user_score = fields.Number(required=True)
 
-@app.route('/login_interface', methods = ['POST'])
+@app.route('/api/user/create', methods = ['POST'])
 def create_user():
     data = request.get_json()
     user_schema = UserSchema()
     user = user_schema.load(data)
     result = user_schema.dump(user.create())
     return make_response(jsonify({"user": result}),200)
+
+# endpoint to show all users
+@app.route("/api/user", methods=["GET"])
+def get_users():
+    get_user = User.query.all()
+    user_schema = UserSchema(many=True)
+    users = user_schema.dump(get_user)
+    return make_response(jsonify({"users": users}))
+
+
+# endpoint to get user detail by id
+@app.route("/api/user/<int:id>", methods=["GET"])
+def user_detail(id):
+    get_product = User.query.get(id)
+    user_schema = UserSchema()
+    user = user_schema.dump(get_product)
+    return make_response(jsonify({"user": user}))
+
+
+# endpoint to delete user
+@app.route("/api/user/<int:id>", methods=["DELETE"])
+def delete_product_by_id(id):
+    get_user = User.query.get(id)
+    db.session.delete(get_user)
+    db.session.commit()
+    return make_response("",204)
 
 if __name__ == "__main__":
     app.run(debug=True)
