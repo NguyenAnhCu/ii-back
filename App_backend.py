@@ -97,6 +97,14 @@ def get_users():
     users = user_schema.dump(get_user)
     return make_response(jsonify({"users": users}))
 
+# endpoint to show 5 best users score
+@app.route("/api/user/bestfive", methods=["GET"])
+def get_five_users():
+    get_user = User.query.order_by(User.user_score.desc()).limit(5).all()
+    user_schema = UserSchema(many=True)
+    users = user_schema.dump(get_user)
+    return make_response(jsonify({"users": users}))
+
 
 # endpoint to get user detail by id
 @app.route("/api/user/<int:id>", methods=["GET"])
