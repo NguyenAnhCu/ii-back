@@ -1,93 +1,171 @@
-from flask import Flask
-from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS, cross_origin
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from flask_sqlalchemy import SQLAlchemy
+
+from marshmallow_sqlalchemy import ModelSchema
+from marshmallow import fields
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
-CORS(app)
-api = Api(app)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://username:password@server/db'
-#db = SQLAlchemy(app)
-
-questions_put_args = reqparse.RequestParser()
-questions_put_args.add_argument("response", type=str,
-                                help="The response of the question", required=True)
-questions_put_args.add_argument("explication", type=str,
-                                help="The description of the response", required=True)
-questions_put_args.add_argument("possibility",
-                                help="All possibilities that we have for one question", required=True)
-questions_put_args.add_argument("Questions_ID", type=int,
-                                help="The description of the response", required=True)
-
-Questions_dict = {"Questions1":
-                      {"Questions_ID": 1,
-                       "response": "aozheva",
-                       "possibility": ["aozheva", "auziyevgao", "hahfhahav"],
-                       "explication": "aoihzbeoab"},
-                  "Questions2":
-                      {"Questions_ID": 2,
-                       "response": "aedvarav",
-                       "possibility": ["aozheva", "auziyevgao", "hahfhahav", "aedvarav"],
-                       "explication": "hobaozcva"}}
-
-Questions_dict1 = [{"Questions_ID": 1,
-                    "response": "aozheva",
-                    "possibility": ["aozheva", "auziyevgao", "hahfhahav"],
-                    "explication": "aoihzbeoab"},
-
-                   {"Questions_ID": 2,
-                    "response": "aedvarav",
-                    "possibility": ["aozheva", "auziyevgao", "hahfhahav", "aedvarav"],
-                    "explication": "hobaozcva"}]
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://bd70b9c3a2566b:6cade5ff@eu-cdbr-west-03.cleardb.net/heroku_0dbbbf44bb63069'
+db = SQLAlchemy(app)
+CORS(app, support_credentials=True)
 
 
-def abort_if_question_doesnt_exist(Question):
-    if Question not in Questions_dict:
-        abort(404, message="Question is not found")
+###Models####
+
+class User(db.Model):
+    __tablename__ = "User"
+    id_user = db.Column(db.Integer, primary_key=True)
+    user_pseudo = db.Column(db.String(20))
+    user_score = db.Column(db.Integer)
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def __init__(self, user_pseudo, user_score):
+        self.user_pseudo = user_pseudo
+        self.user_score = user_score
+
+    def __repr__(self):
+        return '' % self.id_user
 
 
-def abort_if_question_exist(Question):
-    if Question in Questions_dict:
-        abort(409, message="Question already exist")
+class Questions(db.Model):
+    __tablename__ = "Questions"
+    id_question = db.Column(db.Integer, primary_key=True)
+    is_active = db.Column(db.Enum('N', 'Y'))
+
+    question_choices = relationship("QuestionChoices", backref="Questions")
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def __init__(self, is_active):
+        self.is_active = is_active
+
+    def __repr__(self):
+        return '' % self.id_question
 
 
-def get_index_of_response(Questions_dict, Question):
-    return Questions_dict[Question]["possibility"].index(Questions_dict[Question]["response"])
+class QuestionChoices(db.Model):
+    __tablename__ = "Question_Choices"
+    id_choice = db.Column(db.Integer, primary_key=True)
+    id_question = db.Column(db.Integer, ForeignKey('Questions.id_question'))
+    is_right_choice = db.Column(db.Enum('N', 'Y'))
+    choice = db.Column(db.String(20))
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def __init__(self, is_right_choice, choice):
+        self.is_right_choice = is_right_choice
+        self.choice = choice
+
+    def __repr__(self):
+        return '' % self.id_choice
 
 
-def having_the_json(Questions_dict):
-    for i in range(len(Questions_dict)):
-        ind = get_index_of_response(Questions_dict, i)
-        Questions_dict[i]["index_response"] = ind
-
-    return Questions_dict
+db.create_all()
 
 
-class Questions(Resource):
+class UserSchema(ModelSchema):
+    class Meta(ModelSchema.Meta):
+        model = User
+        sqla_session = db.session
 
-    def get(self, Question):
-        abort_if_question_doesnt_exist(Question)
-        return {"Questions_ID": Questions_dict[Question]["Questions_ID"],
-                "possibility": Questions_dict[Question]["possibility"],
-                "explication": Questions_dict[Question]["explication"],
-                "index_response": Questions_dict[Question]["possibility"].index(Questions_dict[Question]["response"])}
-
-    def put(self, Question):
-        abort_if_question_exist(Question)
-        args = questions_put_args.parse_args()
-        Questions_dict[Question] = args
-        return Questions_dict
+    id_user = fields.Number(dump_only=True)
+    user_pseudo = fields.String(required=True)
+    user_score = fields.Number(required=True)
 
 
-class All_questions(Resource):
+@app.route('/api/user/create', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def create_user():
+    data = request.get_json()
+    user_schema = UserSchema()
+    user = user_schema.load(data)
+    result = user_schema.dump(user.create())
+    return make_response(jsonify({"user": result}), 200)
 
-    def get(self):
-        res = having_the_json(Questions_dict1)
-        return res
+
+# endpoint to show all users
+@app.route("/api/user", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def get_users():
+    get_user = User.query.all()
+    user_schema = UserSchema(many=True)
+    users = user_schema.dump(get_user)
+    return make_response(jsonify({"users": users}))
 
 
-api.add_resource(Questions, "/Questions/<string:Question>")
-api.add_resource(All_questions, "/Questions")
+# endpoint to get user detail by id
+@app.route("/api/user/<int:id>", methods=["GET"])
+def user_detail(id):
+    get_product = User.query.get(id)
+    user_schema = UserSchema()
+    user = user_schema.dump(get_product)
+    return make_response(jsonify({"user": user}))
+
+
+# endpoint to delete user
+@app.route("/api/user/<int:id>", methods=["DELETE"])
+def delete_product_by_id(id):
+    get_user = User.query.get(id)
+    db.session.delete(get_user)
+    db.session.commit()
+    return make_response("", 204)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+# app = Flask(__name__)
+# CORS(app)
+# api = Api(app)
+# #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://username:password@server/db'
+# #db = SQLAlchemy(app)
+#
+# questions_put_args = reqparse.RequestParser()
+# questions_put_args.add_argument("response", type=str, help="The response of the question", required=True)
+# questions_put_args.add_argument("explication", type=str, help="The description of the response", required=True)
+#
+#
+# Questions_dict = { "Questions1" : {"response": "aozheva", "explication": "aoihzbeoab"},
+#                    "Questions2" : {"response": "aedvarav", "explication": "hobaozcva"} }
+#
+# def abort_if_question_doesnt_exist(Question):
+#     if Question not in Questions_dict :
+#         abort(404, message="Question is not found")
+#
+# def abort_if_question_exist(Question):
+#     if Question in Questions_dict :
+#         abort(409, message="Question already exist")
+#
+# class Questions(Resource):
+#     def get(self, Question):
+#         abort_if_question_doesnt_exist(Question)
+#         return Questions_dict[Question]
+#
+#     def put(self, Question):
+#         abort_if_question_exist(Question)
+#         args = questions_put_args.parse_args()
+#         Questions_dict[Question] = args
+#         return Questions_dict
+#
+# api.add_resource(Questions, "/Questions/<string:Question>")
+#
+# if __name__ == "__main__" :
+#     app.run(debug=True)
