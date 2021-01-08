@@ -10,67 +10,25 @@ api = Api(app)
 #db = SQLAlchemy(app)
 
 questions_put_args = reqparse.RequestParser()
-questions_put_args.add_argument("response", type=str,
-                                help="The response of the question", required=True)
-questions_put_args.add_argument("explication", type=str,
-                                help="The description of the response", required=True)
-questions_put_args.add_argument("possibility",
-                                help="All possibilities that we have for one question", required=True)
-questions_put_args.add_argument("Questions_ID", type=int,
-                                help="The description of the response", required=True)
+questions_put_args.add_argument("response", type=str, help="The response of the question", required=True)
+questions_put_args.add_argument("explication", type=str, help="The description of the response", required=True)
 
-Questions_dict = {"Questions1":
-                      {"Questions_ID": 1,
-                       "response": "aozheva",
-                       "possibility": ["aozheva", "auziyevgao", "hahfhahav"],
-                       "explication": "aoihzbeoab"},
-                  "Questions2":
-                      {"Questions_ID": 2,
-                       "response": "aedvarav",
-                       "possibility": ["aozheva", "auziyevgao", "hahfhahav", "aedvarav"],
-                       "explication": "hobaozcva"}}
 
-Questions_dict1 = [{"Questions_ID": 1,
-                    "response": "aozheva",
-                    "possibility": ["aozheva", "auziyevgao", "hahfhahav"],
-                    "explication": "aoihzbeoab"},
-
-                   {"Questions_ID": 2,
-                    "response": "aedvarav",
-                    "possibility": ["aozheva", "auziyevgao", "hahfhahav", "aedvarav"],
-                    "explication": "hobaozcva"}]
-
+Questions_dict = { "Questions1" : {"response": "aozheva", "explication": "aoihzbeoab"},
+                   "Questions2" : {"response": "aedvarav", "explication": "hobaozcva"} }
 
 def abort_if_question_doesnt_exist(Question):
-    if Question not in Questions_dict:
+    if Question not in Questions_dict :
         abort(404, message="Question is not found")
 
-
 def abort_if_question_exist(Question):
-    if Question in Questions_dict:
+    if Question in Questions_dict :
         abort(409, message="Question already exist")
 
-
-def get_index_of_response(Questions_dict, Question):
-    return Questions_dict[Question]["possibility"].index(Questions_dict[Question]["response"])
-
-
-def having_the_json(Questions_dict):
-    for i in range(len(Questions_dict)):
-        ind = get_index_of_response(Questions_dict, i)
-        Questions_dict[i]["index_response"] = ind
-
-    return Questions_dict
-
-
 class Questions(Resource):
-
     def get(self, Question):
         abort_if_question_doesnt_exist(Question)
-        return {"Questions_ID": Questions_dict[Question]["Questions_ID"],
-                "possibility": Questions_dict[Question]["possibility"],
-                "explication": Questions_dict[Question]["explication"],
-                "index_response": Questions_dict[Question]["possibility"].index(Questions_dict[Question]["response"])}
+        return Questions_dict[Question]
 
     def put(self, Question):
         abort_if_question_exist(Question)
@@ -78,16 +36,7 @@ class Questions(Resource):
         Questions_dict[Question] = args
         return Questions_dict
 
-
-class All_questions(Resource):
-
-    def get(self):
-        res = having_the_json(Questions_dict1)
-        return res
-
-
 api.add_resource(Questions, "/Questions/<string:Question>")
-api.add_resource(All_questions, "/Questions")
 
-if __name__ == "__main__":
+if __name__ == "__main__" :
     app.run(debug=True)
