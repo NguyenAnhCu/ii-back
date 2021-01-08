@@ -13,6 +13,8 @@ from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://bd70b9c3a2566b:6cade5ff@eu-cdbr-west-03.cleardb.net/heroku_0dbbbf44bb63069'
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 90
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 db = SQLAlchemy(app)
 CORS(app, support_credentials=True)
 ###Models####
