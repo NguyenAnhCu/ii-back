@@ -38,19 +38,42 @@ class User(db.Model):
         return '' % self.id_user
 
 class Questions(db.Model):
+    class Questions(db.Model):
     __tablename__ = "Questions"
     id_question = db.Column(db.Integer, primary_key=True)
-    is_active = db.Column(db.Enum('N','Y'))
+    imageQuestion = db.Column(db.String(20))
+    description = db.Column(db.String(100))
+    answer_correct = db.Column(db.String(100))
+    explination = db.Column(db.String(100))
+    option_1 = db.Column(db.String(30))
+    option_2 = db.Column(db.String(30))
+    option_3 = db.Column(db.String(30))
+    option_4 = db.Column(db.String(30))
+    option_5 = db.Column(db.String(30))
+    option_6 = db.Column(db.String(30))
+    option_7 = db.Column(db.String(30))
+    option_8 = db.Column(db.String(30))
 
-    question_choices = relationship("QuestionChoices", backref="Questions")
+    #question_choices = relationship("QuestionChoices", backref="Questions")
 
     def create(self):
       db.session.add(self)
       db.session.commit()
       return self
     
-    def __init__(self,is_active):
-        self.is_active = is_active
+    def __init__(self,imageQuestion, description, answer_correct, explination, option_1, option_2, option_3, option_4, option_5, option_6, option_7, option_8):
+        self.imageQuestion = imageQuestion
+        self.description = description
+        self.answer_correct = answer_correct
+        self.explination = explination
+        self.option_1 = option_1
+        self.option_2 = option_2
+        self.option_3 = option_3
+        self.option_4 = option_4
+        self.option_5 = option_5
+        self.option_6 = option_6
+        self.option_7 = option_7
+        self.option_8 = option_8
     
     def __repr__(self):
         return '' % self.id_question
@@ -83,6 +106,24 @@ class UserSchema(ModelSchema):
     id_user = fields.Number(dump_only=True)
     user_pseudo = fields.String(required=True)
     user_score = fields.Number(required=True)
+
+class QuestionsSchema(ModelSchema):
+    class Meta(ModelSchema.Meta):
+        model = Questions
+        sqla_session = db.session
+    id_question = fields.Number(dump_only=True)
+    imageQuestion = fields.String(required=True)
+    description = fields.String(required=True)
+    answer_correct = fields.String(required=True)
+    explination = fields.String(required=True)
+    option_1 = fields.String(required=True)
+    option_2 = fields.String(required=True)
+    option_3 = fields.String(required=True)
+    option_4 = fields.String(required=True)
+    option_5 = fields.String(required=True)
+    option_6 = fields.String(required=True)
+    option_7 = fields.String(required=True)
+    option_9 = fields.String(required=True)
 
 @app.route('/api/user/create', methods = ['POST'])
 @cross_origin(supports_credentials=True)
@@ -127,6 +168,18 @@ def delete_product_by_id(id):
     db.session.delete(get_user)
     db.session.commit()
     return make_response("",204)
+
+# endpoint to show all Question
+@app.route("/api/questions", methods=["GET"])
+def get_questions():
+    get_questions = Questions.query.all()
+    questions_schema = QuestionsSchema(many=True)
+    questions = questions_schema.dump(get_questions)
+    listoption = [questions[0]["option_1"],questions[0]["option_2"],questions[0]["option_3"],questions[0]["option_4"],questions[0]["option_5"],questions[0]["option_6"],questions[0]["option_7"],questions[0]["option_8"]]
+    questions[0]["listoption"] = listoption
+    for i in range(1,9):
+        del questions[0]["option_"+str(i)]
+    return make_response(jsonify(questions))
 
 if __name__ == "__main__":
     app.run(debug=True)
