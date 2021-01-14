@@ -193,5 +193,21 @@ def get_questions_by_id(id):
         del question["option_"+str(i)]
     return make_response(jsonify(question))
 
+# endpoint to show a Question by type question
+@app.route("/api/questions/<string:tyquestion>", methods=["GET"])
+def get_question_by_type(tyquestion):
+    get_question = Questions.query.filter(Questions.type_question == tyquestion).all()
+    question_schema = QuestionsSchema(many=True)
+    question = question_schema.dump(get_question)
+    return make_response(jsonify(question))
+
+# endpoint to show a Question by type question and by id
+@app.route("/api/questions/<string:tyquestion>/<int:id>", methods=["GET"])
+def get_question_by_type_id(tyquestion,id):
+    get_question = Questions.query.filter(Questions.type_question == tyquestion, Questions.id_question == id).first()
+    question_schema = QuestionsSchema()
+    question = question_schema.dump(get_question)
+    return make_response(jsonify(question))
+
 if __name__ == "__main__":
     app.run(debug=True)
