@@ -42,6 +42,7 @@ class Questions(db.Model):
     __tablename__ = "Questions"
     id_question = db.Column(db.Integer, primary_key=True)
     imageQuestion = db.Column(db.String(20))
+    type_question = db.Column(db.String(20))
     description = db.Column(db.String(100))
     answer_correct = db.Column(db.String(100))
     explination = db.Column(db.String(100))
@@ -60,8 +61,9 @@ class Questions(db.Model):
       db.session.commit()
       return self
     
-    def __init__(self,imageQuestion, description, answer_correct, explination, option_1, option_2, option_3, option_4, option_5, option_6, option_7):
+    def __init__(self,imageQuestion, type_question, description, answer_correct, explination, option_1, option_2, option_3, option_4, option_5, option_6, option_7):
         self.imageQuestion = imageQuestion
+        self.type_question = type_question
         self.description = description
         self.answer_correct = answer_correct
         self.explination = explination
@@ -111,6 +113,7 @@ class QuestionsSchema(ModelSchema):
         sqla_session = db.session
     id_question = fields.Number(dump_only=True)
     imageQuestion = fields.String(required=True)
+    type_question = fields.String(required=True)
     description = fields.String(required=True)
     answer_correct = fields.String(required=True)
     explination = fields.String(required=True)
