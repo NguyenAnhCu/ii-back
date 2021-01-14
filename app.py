@@ -177,7 +177,7 @@ def get_questions():
     questions = questions_schema.dump(get_questions)
     listoption = [questions[0]["option_1"],questions[0]["option_2"],questions[0]["option_3"],questions[0]["option_4"],questions[0]["option_5"],questions[0]["option_6"],questions[0]["option_7"]]
     questions[0]["listoption"] = listoption
-    for i in range(1,9):
+    for i in range(1,8):
         del questions[0]["option_"+str(i)]
     return make_response(jsonify(questions))
 
