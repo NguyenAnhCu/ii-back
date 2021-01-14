@@ -52,7 +52,6 @@ class Questions(db.Model):
     option_5 = db.Column(db.String(30))
     option_6 = db.Column(db.String(30))
     option_7 = db.Column(db.String(30))
-    option_8 = db.Column(db.String(30))
 
     #question_choices = relationship("QuestionChoices", backref="Questions")
 
@@ -61,7 +60,7 @@ class Questions(db.Model):
       db.session.commit()
       return self
     
-    def __init__(self,imageQuestion, description, answer_correct, explination, option_1, option_2, option_3, option_4, option_5, option_6, option_7, option_8):
+    def __init__(self,imageQuestion, description, answer_correct, explination, option_1, option_2, option_3, option_4, option_5, option_6, option_7):
         self.imageQuestion = imageQuestion
         self.description = description
         self.answer_correct = answer_correct
@@ -73,7 +72,6 @@ class Questions(db.Model):
         self.option_5 = option_5
         self.option_6 = option_6
         self.option_7 = option_7
-        self.option_8 = option_8
     
     def __repr__(self):
         return '' % self.id_question
@@ -123,7 +121,6 @@ class QuestionsSchema(ModelSchema):
     option_5 = fields.String(required=True)
     option_6 = fields.String(required=True)
     option_7 = fields.String(required=True)
-    option_9 = fields.String(required=True)
 
 @app.route('/api/user/create', methods = ['POST'])
 @cross_origin(supports_credentials=True)
@@ -175,11 +172,23 @@ def get_questions():
     get_questions = Questions.query.all()
     questions_schema = QuestionsSchema(many=True)
     questions = questions_schema.dump(get_questions)
-    listoption = [questions[0]["option_1"],questions[0]["option_2"],questions[0]["option_3"],questions[0]["option_4"],questions[0]["option_5"],questions[0]["option_6"],questions[0]["option_7"],questions[0]["option_8"]]
+    listoption = [questions[0]["option_1"],questions[0]["option_2"],questions[0]["option_3"],questions[0]["option_4"],questions[0]["option_5"],questions[0]["option_6"],questions[0]["option_7"]]
     questions[0]["listoption"] = listoption
     for i in range(1,9):
         del questions[0]["option_"+str(i)]
     return make_response(jsonify(questions))
+
+# endpoint to show a specific Question
+@app.route("/api/questions/<int:id>", methods=["GET"])
+def get_questions_by_id(id):
+    get_question = Questions.query.get(id)
+    question_schema = QuestionsSchema()
+    question = question_schema.dump(get_question)
+    listoption = [question["option_1"],question["option_2"],question["option_3"],question["option_4"],question["option_5"],question["option_6"],question["option_7"]]
+    question["listoption"] = listoption
+    for i in range(1,8):
+        del question["option_"+str(i)]
+    return make_response(jsonify(question))
 
 if __name__ == "__main__":
     app.run(debug=True)
