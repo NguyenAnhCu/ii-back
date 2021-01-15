@@ -199,6 +199,10 @@ def get_question_by_type(tyquestion):
     get_question = Questions.query.filter(Questions.type_question == tyquestion).all()
     question_schema = QuestionsSchema(many=True)
     question = question_schema.dump(get_question)
+    listoption = [question[0]["option_1"],question[0]["option_2"],question[0]["option_3"],question[0]["option_4"],question[0]["option_5"],question[0]["option_6"],question[0]["option_7"]]
+    question[0]["listoption"] = listoption
+    for i in range(1,8):
+        del question[0]["option_"+str(i)]
     return make_response(jsonify(question))
 
 # endpoint to show a Question by type question and by id
