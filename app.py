@@ -38,7 +38,6 @@ class User(db.Model):
         return '' % self.id_user
 
 class Questions(db.Model):
-    class Questions(db.Model):
     __tablename__ = "Questions"
     id_question = db.Column(db.Integer, primary_key=True)
     imageQuestion = db.Column(db.String(20))
