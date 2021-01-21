@@ -1,3 +1,5 @@
+# Import necessary libraries
+
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS, cross_origin
 import warnings
@@ -17,6 +19,7 @@ app.config['SQLALCHEMY_POOL_RECYCLE'] = 90
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 db = SQLAlchemy(app)
 CORS(app, support_credentials=True)
+
 ###Models####
  
 class User(db.Model):
@@ -40,18 +43,18 @@ class User(db.Model):
 class Questions(db.Model):
     __tablename__ = "Questions"
     id_question = db.Column(db.Integer, primary_key=True)
-    imageQuestion = db.Column(db.String(20))
+    imageQuestion = db.Column(db.String(100))
     type_question = db.Column(db.String(20))
     description = db.Column(db.String(100))
     answer_correct = db.Column(db.String(100))
     explination = db.Column(db.String(100))
-    option_1 = db.Column(db.String(30))
-    option_2 = db.Column(db.String(30))
-    option_3 = db.Column(db.String(30))
-    option_4 = db.Column(db.String(30))
-    option_5 = db.Column(db.String(30))
-    option_6 = db.Column(db.String(30))
-    option_7 = db.Column(db.String(30))
+    option_1 = db.Column(db.String(100))
+    option_2 = db.Column(db.String(100))
+    option_3 = db.Column(db.String(100))
+    option_4 = db.Column(db.String(100))
+    option_5 = db.Column(db.String(100))
+    option_6 = db.Column(db.String(100))
+    option_7 = db.Column(db.String(100))
 
     #question_choices = relationship("QuestionChoices", backref="Questions")
 
@@ -76,25 +79,6 @@ class Questions(db.Model):
     
     def __repr__(self):
         return '' % self.id_question
-
-class QuestionChoices(db.Model):
-    __tablename__ = "Question_Choices"
-    id_choice = db.Column(db.Integer, primary_key=True)
-    id_question = db.Column(db.Integer, ForeignKey('Questions.id_question'))
-    is_right_choice = db.Column(db.Enum('N','Y'))
-    choice = db.Column(db.String(20))
-
-    def create(self):
-      db.session.add(self)
-      db.session.commit()
-      return self
-    
-    def __init__(self,is_right_choice, choice):
-        self.is_right_choice = is_right_choice
-        self.choice = choice
-    
-    def __repr__(self):
-        return '' % self.id_choice
 
 db.create_all()
 
@@ -124,6 +108,7 @@ class QuestionsSchema(ModelSchema):
     option_6 = fields.String(required=True)
     option_7 = fields.String(required=True)
 
+# endpoint to add users
 @app.route('/api/user/create', methods = ['POST'])
 @cross_origin(supports_credentials=True)
 def create_user():
@@ -174,10 +159,11 @@ def get_questions():
     get_questions = Questions.query.all()
     questions_schema = QuestionsSchema(many=True)
     questions = questions_schema.dump(get_questions)
-    listoption = [questions[0]["option_1"],questions[0]["option_2"],questions[0]["option_3"],questions[0]["option_4"],questions[0]["option_5"],questions[0]["option_6"],questions[0]["option_7"]]
-    questions[0]["listoption"] = listoption
-    for i in range(1,8):
-        del questions[0]["option_"+str(i)]
+    for i in range(len(questions)):
+        listoption = [questions[i]["option_1"],questions[i]["option_2"],questions[i]["option_3"],questions[i]["option_4"],questions[i]["option_5"],questions[i]["option_6"],questions[i]["option_7"]]
+        questions[i]["listoption"] = listoption
+        for j in range(1,8):
+            del questions[i]["option_"+str(j)]
     return make_response(jsonify(questions))
 
 # endpoint to show a specific Question
@@ -198,10 +184,11 @@ def get_question_by_type(tyquestion):
     get_question = Questions.query.filter(Questions.type_question == tyquestion).all()
     question_schema = QuestionsSchema(many=True)
     question = question_schema.dump(get_question)
-    listoption = [question[0]["option_1"],question[0]["option_2"],question[0]["option_3"],question[0]["option_4"],question[0]["option_5"],question[0]["option_6"],question[0]["option_7"]]
-    question[0]["listoption"] = listoption
-    for i in range(1,8):
-        del question[0]["option_"+str(i)]
+    for i in range(len(question)):
+        listoption = [question[i]["option_1"],question[i]["option_2"],question[i]["option_3"],question[i]["option_4"],question[i]["option_5"],question[i]["option_6"],question[i]["option_7"]]
+        question[i]["listoption"] = listoption
+        for j in range(1,8):
+            del question[i]["option_"+str(j)]
     return make_response(jsonify(question))
 
 # endpoint to show a Question by type question and by id
