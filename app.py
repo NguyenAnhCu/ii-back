@@ -10,7 +10,7 @@ with warnings.catch_warnings():
 
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
-from sqlalchemy import  ForeignKey
+from sqlalchemy import  ForeignKey, func
 from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
@@ -198,6 +198,19 @@ def get_question_by_type_id(tyquestion,id):
     question_schema = QuestionsSchema()
     question = question_schema.dump(get_question)
     return make_response(jsonify(question))
+
+# endpoint to show a number of Questions randomly
+@app.route("/api/questions/random/<int:nb_questions>", methods=["GET"])
+def get_random_questions(nb_questions):
+    get_questions = Questions.query.order_by(func.random()).limit(nb_questions).all()
+    questions_schema = QuestionsSchema(many=True)
+    questions = questions_schema.dump(get_questions)
+    for i in range(len(questions)):
+        listoption = [questions[i]["option_1"],questions[i]["option_2"],questions[i]["option_3"],questions[i]["option_4"],questions[i]["option_5"],questions[i]["option_6"],questions[i]["option_7"]]
+        questions[i]["listoption"] = listoption
+        for j in range(1,8):
+            del questions[i]["option_"+str(j)]
+    return make_response(jsonify(questions))
 
 if __name__ == "__main__":
     app.run(debug=True)
