@@ -212,5 +212,17 @@ def get_random_questions(nb_questions):
             del questions[i]["option_"+str(j)]
     return make_response(jsonify(questions))
 
+@app.route('/api/questionImage')
+def show_image_option1():
+    q = Question(800,800)
+    ques_type = random.choice(["1","2","3"])
+    if ques_type  == "1" :
+        q.generate_random_lines()
+    elif ques_type == "2" :
+        q.generate_random_hexa()
+    elif ques_type == "3" :
+        q.generate_random_boxes()
+    return render_template("index.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
