@@ -92,14 +92,14 @@ class Question ():
         explication["true_response"]["explication"] = """La réponse est correcte, les traits verticaux et horizontaux
 sont en continuité par colonne et par ligne"""
         used_positions = [(true_dec_v, true_dec_h)] 
-        false_reponce_number = 0
-        while false_reponce_number < 7:
+        false_reponse_number = 0
+        while false_reponse_number < 7:
             image = np.zeros([self.image.box_height,self.image.box_width,3],dtype=np.uint8)
             image[:,:,:] = np.array(self.image._box_color)
             pos_v, pos_h = random.choice(possible_horizontal_shifts), random.choice(possible_vertical_shifts)
             pos = (pos_v, pos_h)
             if pos not in used_positions :
-                false_reponce_number+=1
+                false_reponse_number+=1
                 if pos_v != true_dec_v and pos_h != true_dec_h :
                     false_explication = ( "Le trait vertical doit être à la même position que le trait vertical de chaque image de la même colonne"
  "Le trait horizontal doit être à la même position que le trait horizontal de chaque image sur la même ligne")
@@ -109,12 +109,12 @@ sont en continuité par colonne et par ligne"""
                 elif pos_v != true_dec_v :
                     false_explication =  (
                     "Le trait vertical doit être à la même position que le trait vertical de chaque image de la même colonne")
-                explication["false_response" + str(false_reponce_number)]= {"status" :"incorrect"}
-                explication["false_response" + str(false_reponce_number)]["explication"] = false_explication
+                explication["false_response" + str(false_reponse_number)]= {"status" :"incorrect"}
+                explication["false_response" + str(false_reponse_number)]["explication"] = false_explication
                 image = cv2.line(image, (0, pos_h), (self.image.box_height, pos_h), self.image._shapes_color, 2)
                 image = cv2.line(image, (pos_v, 0), (pos_v, self.image.box_width), self.image._shapes_color, 2)
                 used_positions.append(pos)
-                cv2.imwrite("../question/false_response" + str(false_reponce_number)+ '.png', image)
+                cv2.imwrite("../question/false_response" + str(false_reponse_number)+ '.png', image)
         self.save_question_explication(explication,"../question/question_explication.json")
         self.image.save_question_info("../question/")
         self.image.save_image("../question/question.png")
