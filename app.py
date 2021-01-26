@@ -223,7 +223,7 @@ def show_image_option1():
         q.generate_random_hexa()
     elif ques_type == "3" :
         q.generate_random_boxes()
-    return render_template("index.html")
+    return make_response(jsonify({"responce": "it's ok"}),200)
 
 if __name__ == "__main__":
     app.run(debug=True)
