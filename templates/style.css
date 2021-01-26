@@ -1,0 +1,18 @@
+.title{
+    margin: auto;
+    width: max-content;
+  }
+  .question{
+    margin: auto;
+    width: max-content;
+  }
+  .images-sghar{
+    margin: 20px -10px;
+  }
+  .images-sghar .img-container{
+    padding: 0 10px;
+  }
+  .images-sghar .img-container img{
+    width: 100%;
+    object-fit: contain;
+  }
