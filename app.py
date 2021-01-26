@@ -12,6 +12,7 @@ from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
 from sqlalchemy import  ForeignKey, func
 from sqlalchemy.orm import relationship
+from packages.IQ_generator import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://bd70b9c3a2566b:6cade5ff@eu-cdbr-west-03.cleardb.net/heroku_0dbbbf44bb63069'
