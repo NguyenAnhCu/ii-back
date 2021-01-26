@@ -8,7 +8,7 @@
 
 import cv2 
 import numpy as np
-from image_utils import *
+from packages.image_utils import *
 import json
 import random
 import math
@@ -95,10 +95,10 @@ les traits verticales et horizontales de chaque image de la meme ligne et colone
                 image = cv2.line(image, (0, pos_h), (self.image.box_height, pos_h), self.image._shapes_color, 2)
                 image = cv2.line(image, (pos_v, 0), (pos_v, self.image.box_width), self.image._shapes_color, 2)
                 used_positions.append(pos)
-                cv2.imwrite("../question/false_responce" + str(false_reponce_number)+ '.png', image)
-        self.save_question_explication(explication,"../question/question_explication.json")
-        self.image.save_question_info("../question/")
-        self.image.save_image("../question/question.png")
+                cv2.imwrite("question/false_responce" + str(false_reponce_number)+ '.png', image)
+        self.save_question_explication(explication,"question/question_explication.json")
+        self.image.save_question_info("question/")
+        self.image.save_image("question/question.png")
 
     def generate_random_boxes(self):
         frame_dec = int(self.image.box_height/(18))
@@ -177,10 +177,10 @@ les traits verticales et horizontales de chaque image de la meme ligne et colone
                     false_explication = ('Sur une même ligne, le nombre d’objet est le même dans chaque image')
                 explication["false_responce" + str(number_of_false_responce)]= {"status" :"incorrect"}
                 explication["false_responce" + str(number_of_false_responce)]["explication"] = false_explication
-                cv2.imwrite("../question/false_responce" + str(number_of_false_responce)+ '.png', image)
-        self.save_question_explication(explication,"../question/question_explication.json")
-        self.image.save_question_info("../question/")
-        self.image.save_image("../question/question.png")
+                cv2.imwrite("question/false_responce" + str(number_of_false_responce)+ '.png', image)
+        self.save_question_explication(explication,"question/question_explication.json")
+        self.image.save_question_info("question/")
+        self.image.save_image("question/question.png")
 
     def generate_random_indexs(self):
         indexs = [i for i in range(6)]
@@ -244,14 +244,7 @@ les traits verticales et horizontales de chaque image de la meme ligne et colone
                 explication["false_responce"+ str(number_of_false_responce)]= {"status" :"false"}
                 explication["false_responce"+ str(number_of_false_responce)]["explication"] = ("L’image sur la dernière ligne contient l’ensemble des couleurs"
                                         "claires des 2 images contenues dans la même colonne")
-                cv2.imwrite("../question/false_responce" + str(number_of_false_responce)+ '.png', fake_image.image)
-        self.save_question_explication(explication,"../question/question_explication.json")
-        self.image.save_question_info("../question/")
-        self.image.save_image("../question/question.png")
-
-
-if __name__ == "__main__":
-    q = Question(1000,1000)
-    q.generate_random_boxes()
-    q.image.show("image")
-            
+                cv2.imwrite("question/false_responce" + str(number_of_false_responce)+ '.png', fake_image.image)
+        self.save_question_explication(explication,"question/question_explication.json")
+        self.image.save_question_info("question/")
+        self.image.save_image("question/question.png")      

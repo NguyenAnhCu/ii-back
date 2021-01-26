@@ -99,7 +99,7 @@ class image :
         """
         #TODO : docs !!!!!!
         """
-        question_label = cv2.imread("../data/ques.png")
+        question_label = cv2.imread("data/ques.png")
         question_label = cv2.resize(question_label, (self.box_height,self.box_width)) 
         x_responce = self.pos_x  + (self.box_height * 2) + 10
         y_responce = self.pos_y + (self.box_height * 2) + 10
