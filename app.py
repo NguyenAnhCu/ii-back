@@ -213,7 +213,7 @@ def get_random_questions(nb_questions):
             del questions[i]["option_"+str(j)]
     return make_response(jsonify(questions))
 
-@app.route('/api/questionImage')
+@app.route('/api/questionImage', methods=["GET"])
 def show_image_option1():
     q = Question(800,800)
     ques_type = random.choice(["1","2","3"])
