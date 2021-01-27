@@ -89,7 +89,7 @@ class Question ():
             pos_x_line += self.image.box_width + 5
         explication = {}
         explication["true_response"]= {"status" :"correct"}
-        explication["true_response"]["explication"] = """VRAI :La réponse est correcte, les traits verticaux et horizontaux
+        explication["true_response"]["explication"] = """VRAI : La réponse est correcte, les traits verticaux et horizontaux
 sont en continuité par colonne et par ligne"""
         used_positions = [(true_dec_v, true_dec_h)] 
         false_reponse_number = 0
