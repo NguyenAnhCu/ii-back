@@ -1,0 +1,11 @@
+ceph_argparse.py
+ceph_rest_api.py
+cephfs.py
+rados.py
+rbd.py
+setup.cfg
+setup.py
+python_cephlibs.egg-info/PKG-INFO
+python_cephlibs.egg-info/SOURCES.txt
+python_cephlibs.egg-info/dependency_links.txt
+python_cephlibs.egg-info/top_level.txt
