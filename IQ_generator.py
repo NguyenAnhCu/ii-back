@@ -89,7 +89,7 @@ class Question ():
             pos_x_line += self.image.box_width + 5
         explication = {}
         explication["true_response"]= {"status" :"correct"}
-        explication["true_response"]["explication"] = """La réponse est correcte, les traits verticaux et horizontaux
+        explication["true_response"]["explication"] = """VRAI :La réponse est correcte, les traits verticaux et horizontaux
 sont en continuité par colonne et par ligne"""
         used_positions = [(true_dec_v, true_dec_h)] 
         false_reponse_number = 0
@@ -101,14 +101,14 @@ sont en continuité par colonne et par ligne"""
             if pos not in used_positions :
                 false_reponse_number+=1
                 if pos_v != true_dec_v and pos_h != true_dec_h :
-                    false_explication = ( "Le trait vertical doit être à la même position que le trait vertical de chaque image de la même colonne"
+                    false_explication = ( " FAUX : Le trait vertical doit être à la même position que le trait vertical de chaque image de la même colonne"
  "Le trait horizontal doit être à la même position que le trait horizontal de chaque image sur la même ligne")
                 elif   pos_h != true_dec_h :
                     false_explication =  (
-                    "Le trait horizontal doit être à la même position que le trait horizontal de chaque image sur la même ligne")
+                    " FAUX : Le trait horizontal doit être à la même position que le trait horizontal de chaque image sur la même ligne")
                 elif pos_v != true_dec_v :
                     false_explication =  (
-                    "Le trait vertical doit être à la même position que le trait vertical de chaque image de la même colonne")
+                    "FAUX : Le trait vertical doit être à la même position que le trait vertical de chaque image de la même colonne")
                 explication["false_response" + str(false_reponse_number)]= {"status" :"incorrect"}
                 explication["false_response" + str(false_reponse_number)]["explication"] = false_explication
                 image = cv2.line(image, (0, pos_h), (self.image.box_height, pos_h), self.image._shapes_color, 2)
@@ -162,7 +162,7 @@ sont en continuité par colonne et par ligne"""
         number_of_false_response = 0
         explication = {}
         explication["true_response"]= {"status" :"correct"}
-        explication["true_response"]["explication"] = ('Sur une même ligne, le nombre de carré doit être le même dans chaque image. Sur une même colonne, les carrés de chaque image doivent être à la même position')
+        explication["true_response"]["explication"] = ('VRAI : Sur une même ligne, le nombre de carré doit être le même dans chaque image. Sur une même colonne, les carrés de chaque image doivent être à la même position')
         while number_of_false_response < 7:
             image = np.zeros([self.image.box_height,self.image.box_height,3],dtype=np.uint8)
             image[:,:,:] = np.array(self.image._box_color)
@@ -193,11 +193,11 @@ sont en continuité par colonne et par ligne"""
                     dec2 += object_size + frame_dec
                 number_of_false_response+=1
                 if pos_box != true_response_cords["position_of_objects"] and columns_number != true_response_cords["number_of_objects"] :
-                    false_explication = ('Sur une même ligne, le nombre de carré doit être le même dans chaque image. Sur une même colonne, les carrés de chaque image doivent être à la même position')
+                    false_explication = (' FAUX : Sur une même ligne, le nombre de carré doit être le même dans chaque image. Sur une même colonne, les carrés de chaque image doivent être à la même position')
                 elif pos_box != true_response_cords["position_of_objects"] :
-                    false_explication = ('Sur une même colonne, les carrés de chaque image doivent à la même position')
+                    false_explication = ('FAUX : Sur une même colonne, les carrés de chaque image doivent à la même position')
                 elif columns_number != true_response_cords["number_of_objects"] :
-                    false_explication = ('Sur une même ligne, le nombre de carré doit être le même dans chaque image')
+                    false_explication = ('FAUX : Sur une même ligne, le nombre de carré doit être le même dans chaque image')
                 explication["false_response" + str(number_of_false_response)]= {"status" :"incorrect"}
                 explication["false_response" + str(number_of_false_response)]["explication"] = false_explication
                 cv2.imwrite("../question/false_response" + str(number_of_false_response)+ '.png', image)
@@ -259,7 +259,7 @@ sont en continuité par colonne et par ligne"""
             pos_x+=self.image.box_height + 5 
         explication = {}
         explication["true_response"]= {"status" :"correct"}
-        explication["true_response"]["explication"] = ("L’image sur la dernière ligne contient la somme des couleurs claires des 2 images de la même colonne")
+        explication["true_response"]["explication"] = ("VRAI : L’image sur la dernière ligne contient la somme des couleurs claires des 2 images de la même colonne")
         number_of_false_response = 0
         while number_of_false_response < 7:
             fake_image = image(self.image.box_height, self.image.box_width)
@@ -271,7 +271,7 @@ sont en continuité par colonne et par ligne"""
                 fake_image.draw_hexagon((pos_x + centre, pos_y+centre),size,shape)
                 number_of_false_response+=1
                 explication["false_response"+ str(number_of_false_response)]= {"status" :"false"}
-                explication["false_response"+ str(number_of_false_response)]["explication"] = ("L’image sur la dernière ligne contient la somme des couleurs claires des 2 images de la même colonne")
+                explication["false_response"+ str(number_of_false_response)]["explication"] = (" FAUX : L’image sur la dernière ligne contient la somme des couleurs claires des 2 images de la même colonne")
                 cv2.imwrite("../question/false_response" + str(number_of_false_response)+ '.png', fake_image.image)
         self.save_question_explication(explication,"../question/question_explication.json")
         self.image.save_question_info("../question/")
