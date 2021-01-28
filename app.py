@@ -111,7 +111,6 @@ class QuestionsSchema(ModelSchema):
 
 # endpoint to add users
 @app.route('/api/user/create', methods = ['POST'])
-@cross_origin(supports_credentials=True)
 def create_user():
     data = request.get_json()
     user_schema = UserSchema()
@@ -121,7 +120,6 @@ def create_user():
 
 # endpoint to show all users
 @app.route("/api/user", methods=["GET"])
-@cross_origin(supports_credentials=True)
 def get_users():
     get_user = User.query.all()
     user_schema = UserSchema(many=True)
