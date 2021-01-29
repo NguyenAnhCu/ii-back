@@ -207,8 +207,10 @@ def get_random_questions(nb_questions):
     get_questions = Questions.query.order_by(func.random()).limit(nb_questions).all()
     questions_schema = QuestionsSchema(many=True)
     questions = questions_schema.dump(get_questions)
+    with open('./question/question_explication.json') as f:
+        data = json.load(f)
     for i in range(len(questions)):
-        listoption = [questions[i]["option_1"],questions[i]["option_2"],questions[i]["option_3"],questions[i]["option_4"],questions[i]["option_5"],questions[i]["option_6"],questions[i]["option_7"]]
+        listoption = [[questions[i]["option_1"], data["false_responce1"]["explication"]],[questions[i]["option_2"], data["false_responce2"]["explication"]],[questions[i]["option_3"], data["false_responce3"]["explication"]],[questions[i]["option_4"], data["false_responce4"]["explication"]],[questions[i]["option_5"], data["false_responce5"]["explication"]],[questions[i]["option_6"], data["false_responce6"]["explication"]],[questions[i]["option_7"],data["false_responce7"]["explication"]]]
         questions[i]["listoption"] = listoption
         for j in range(1,8):
             del questions[i]["option_"+str(j)]
