@@ -13,6 +13,7 @@ from marshmallow import fields
 from sqlalchemy import  ForeignKey, func
 from sqlalchemy.orm import relationship
 from packages.IQ_generator import *
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://bd70b9c3a2566b:6cade5ff@eu-cdbr-west-03.cleardb.net/heroku_0dbbbf44bb63069'
@@ -223,7 +224,9 @@ def show_image_option1():
         q.generate_random_hexa()
     elif ques_type == "3" :
         q.generate_random_boxes()
-    return make_response(jsonify({"responce": "it's ok"}),200)
+    with open('./question/question_explication.json') as f:
+        data = json.load(f)
+    return make_response(jsonify(data),200)
 
 if __name__ == "__main__":
     app.run(debug=True)
